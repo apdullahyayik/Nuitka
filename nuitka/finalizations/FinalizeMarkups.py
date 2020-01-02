@@ -38,10 +38,12 @@ from nuitka.__past__ import unicode  # pylint: disable=I0021,redefined-builtin
 from nuitka.importing.Importing import isWhiteListedImport
 from nuitka.plugins.Plugins import Plugins
 from nuitka.PythonVersions import python_version
+from nuitka.tools.Basics import getHomePath
 
 from .FinalizeBase import FinalizationVisitorBase
 
 imported_names = set()
+home_path = getHomePath()
 
 
 def getImportedNames():
@@ -98,7 +100,11 @@ class FinalizeMarkups(FinalizationVisitorBase):
             warning(
                 """Unresolved '__import__' call at '%s' may require use \
 of '--include-plugin-directory' or '--include-plugin-files'."""
-                % (node.getSourceReference().getAsString())
+                % (
+                    node.getSourceReference()
+                    .getAsString()
+                    .replace(home_path, "$PYPACKAGES")
+                )
             )
 
         if node.isExpressionBuiltinImport() and node.recurse_attempted:
